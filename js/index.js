@@ -2,6 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  // Create form to search for repos
   const formRepo = document.createElement('form')
   formRepo.innerHTML = `
   <form id='github-form'>
@@ -11,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const div = document.getElementById('main')
   div.appendChild(formRepo)
 
+  // Add event listener to repo search
   formRepo.addEventListener('submit', e => {
     e.preventDefault()
     fetch(`https://api.github.com/search/repositories?q=${e.target.search.value}`)
@@ -18,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
     //.then(data => console.log(data.items)) 
     .then(data => data.items.forEach(item => renderRepoSearch(item))) 
   })
-  
   function renderRepoSearch(item) {
     const reposList = document.getElementById('repos-list')
     const li = document.createElement('li')
@@ -26,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
       reposList.append(li)
   }
 
+  // Add event listener to search by username form
   const form = document.querySelector('#github-form');
   document.getElementById('search').placeholder = 'Type username'
   form.addEventListener('submit', e => {
@@ -36,9 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(`https://api.github.com/search/users?q=${e.target.search.value}`)
     .then(resp => resp.json())
     //.then(data => console.log(data.items))
-    .then(data => data.items.forEach(item => renderLogin(item)))
-    
-    //Render in the DOM login and image  
+    .then(data => data.items.forEach(item => renderLogin(item))) 
     function renderLogin(item) {
       //console.log(item.login)
       const userList = document.querySelector('#user-list')
@@ -55,14 +55,14 @@ document.addEventListener("DOMContentLoaded", () => {
       img.src = item.avatar_url
       li.append(h2, a, img)
       userList.append(li)
-
+      // Add event listener to username to show its repos
       h2.addEventListener('click', e => renderRepos(item.login, e))
 
       e.target.reset()
     }
   })
 
-  // Show repos when clicking on user
+  // Show repos when clicking on username
   function renderRepos(login, e) {
     const reposList = document.getElementById('repos-list')
     reposList.innerHTML = '' 

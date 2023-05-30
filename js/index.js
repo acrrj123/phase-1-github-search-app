@@ -2,8 +2,32 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const form = document.querySelector('#github-form');
+  const formRepo = document.createElement('form')
+  formRepo.innerHTML = `
+  <form id='github-form'>
+      <input id='search' type='text' name='search' placeholder='Type repo'>
+      <input type='submit' name='submit'/>
+    </form>`
+  const div = document.getElementById('main')
+  div.appendChild(formRepo)
 
+  formRepo.addEventListener('submit', e => {
+    e.preventDefault()
+    fetch(`https://api.github.com/search/repositories?q=${e.target.search.value}`)
+    .then(resp => resp.json())
+    //.then(data => console.log(data.items)) 
+    .then(data => data.items.forEach(item => renderRepoSearch(item))) 
+  })
+  
+  function renderRepoSearch(item) {
+    const reposList = document.getElementById('repos-list')
+    const li = document.createElement('li')
+      li.textContent = item.name
+      reposList.append(li)
+  }
+
+  const form = document.querySelector('#github-form');
+  document.getElementById('search').placeholder = 'Type username'
   form.addEventListener('submit', e => {
     e.preventDefault()
     //console.log(e.target[0].value)
@@ -22,10 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const li = document.createElement('li')
       const h2 = document.createElement('h2')
       const img = document.createElement('img')
-      img.src = item.avatar_url
+      const a = document.createElement('a')
+      const link = document.createTextNode('Link to profile')
+      a.append(link)
+      a.title = 'Link to profile'
+      a.href = `${item.html_url}`
       h2.textContent = item.login
-
-      li.append(h2, img)
+      img.src = item.avatar_url
+      li.append(h2, a, img)
       userList.append(li)
 
       h2.addEventListener('click', e => renderRepos(item.login, e))
